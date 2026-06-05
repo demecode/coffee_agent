@@ -1,0 +1,31 @@
+{
+  "server": {
+    "name": "coffee-mcp-server",
+    "transports": {
+      "sse": "/sse",
+      "streamable_http": "/mcp"
+    }
+  },
+  "tools": [
+    {
+      "name": "get_menu",
+      "description": "Return coffee menu items with prices, sizes, tags, and available customizations."
+    },
+    {
+      "name": "recommend_coffee",
+      "description": "Recommend coffee drinks from taste, caffeine, milk, sweetness, temperature, and group-size preferences."
+    },
+    {
+      "name": "estimate_order_total",
+      "description": "Estimate subtotal, tax, and total for a list of coffee order items."
+    },
+    {
+      "name": "get_store_info",
+      "description": "Return mock store address, timezone, opening hours, and pickup estimate."
+    },
+    {
+      "name": "create_order",
+      "description": "Create a mock coffee order after the customer has confirmed the order details."
+    }
+  ]
+}

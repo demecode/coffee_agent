@@ -33,3 +33,33 @@ output "application_insights_connection_string" {
   value       = azurerm_application_insights.main.connection_string
   sensitive   = true
 }
+
+output "mcp_acr_name" {
+  description = "Azure Container Registry name for the MCP server image."
+  value       = azurerm_container_registry.mcp.name
+}
+
+output "mcp_acr_login_server" {
+  description = "Azure Container Registry login server for the MCP server image."
+  value       = azurerm_container_registry.mcp.login_server
+}
+
+output "mcp_container_app_name" {
+  description = "Container App name for the Coffee MCP server."
+  value       = azurerm_container_app.mcp.name
+}
+
+output "mcp_server_url" {
+  description = "Base URL for the Coffee MCP server."
+  value       = "https://${azurerm_container_app.mcp.latest_revision_fqdn}"
+}
+
+output "mcp_sse_url" {
+  description = "SSE endpoint URL for the Coffee MCP server."
+  value       = "https://${azurerm_container_app.mcp.latest_revision_fqdn}/sse"
+}
+
+output "mcp_streamable_http_url" {
+  description = "Streamable HTTP endpoint URL for the Coffee MCP server."
+  value       = "https://${azurerm_container_app.mcp.latest_revision_fqdn}/mcp"
+}

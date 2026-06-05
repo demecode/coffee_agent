@@ -18,6 +18,7 @@ load_dotenv(ENV_PATH)
 
 instructions_path = SCRIPT_DIR / "instructions.txt"
 agent_name = os.getenv("AGENT_NAME", "coffee-agent")
+coffee_mcp_server_url = os.getenv("COFFEE_MCP_SERVER_URL", "").strip()
 if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?", agent_name):
     raise ValueError(
         "AGENT_NAME must start and end with an alphanumeric character, "
@@ -216,6 +217,26 @@ toolset: list[Tool] = []
 toolset.append(FileSearchTool(vector_store_ids=[vector_store.id]))
 toolset.append(func_tool)
 
+if coffee_mcp_server_url:
+    toolset.append(
+        MCPTool(
+            server_label="coffee",
+            server_url=coffee_mcp_server_url,
+            server_description="Coffee menu, recommendation, store information, pricing, and order tools.",
+            allowed_tools=[
+                "get_menu",
+                "recommend_coffee",
+                "estimate_order_total",
+                "get_store_info",
+                "create_order",
+            ],
+            require_approval="never",
+        )
+    )
+    print(f"Using Coffee MCP server: {coffee_mcp_server_url}")
+else:
+    print("COFFEE_MCP_SERVER_URL is not configured; running without the Coffee MCP server.")
+
 
 # agent creation
 agent = project_client.agents.create_version(
@@ -234,7 +255,11 @@ print(f"Created conversation (id: {conversation.id})")
 
 while True:
     # Get the user input
-    user_input = input("You: ")
+    try:
+        user_input = input("You: ")
+    except EOFError:
+        print("No input received. Exiting the chat.")
+        break
 
     if user_input.lower() in ["exit", "quit"]:
         print("Exiting the chat.")

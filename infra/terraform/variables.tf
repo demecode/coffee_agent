@@ -101,6 +101,30 @@ variable "model_capacity" {
   default     = 1
 }
 
+variable "mcp_image_repository" {
+  description = "Container repository name for the Coffee MCP server image."
+  type        = string
+  default     = "coffee-mcp-server"
+}
+
+variable "mcp_image_tag" {
+  description = "Container image tag for the Coffee MCP server."
+  type        = string
+  default     = "latest"
+}
+
+variable "mcp_container_cpu" {
+  description = "CPU cores allocated to the MCP Container App."
+  type        = number
+  default     = 0.25
+}
+
+variable "mcp_container_memory" {
+  description = "Memory allocated to the MCP Container App."
+  type        = string
+  default     = "0.5Gi"
+}
+
 variable "tags" {
   description = "Tags applied to Azure resources."
   type        = map(string)

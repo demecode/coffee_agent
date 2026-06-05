@@ -4,3 +4,4 @@ python-dotenv>=1.1.0
 openai
 jsonref
 pytest>=8.0.0
+mcp[cli]>=1.21.0

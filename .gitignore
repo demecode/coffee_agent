@@ -4,6 +4,7 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 .venv/
+.mcp_build_context/
 .env
 !.env.example
 .terraform/
