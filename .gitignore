@@ -4,6 +4,12 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 .venv/
+.env
+!.env.example
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
 dist/
 build/
 *.egg-info/
