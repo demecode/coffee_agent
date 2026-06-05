@@ -115,11 +115,13 @@ def _price_for(item: dict[str, Any], size: str) -> float:
 
 
 @mcp.tool()
-def get_menu(tag: str | None = None, limit: int = 8) -> dict[str, Any]:
+def get_menu(tag: str = "", limit: int = 8) -> dict[str, Any]:
     """Return coffee menu items, optionally filtered by a tag such as iced, sweet, milk-forward, or black coffee."""
-    filtered = [item for item in MENU if tag is None or tag in item["tags"]]
+    normalized_tag = tag.strip().lower()
+    filtered = [item for item in MENU if not normalized_tag or normalized_tag in item["tags"]]
     return {
         "currency": "GBP",
+        "filter": normalized_tag or "all",
         "milk_options": MILK_OPTIONS,
         "syrups": SYRUPS,
         "items": filtered[: max(1, min(limit, 20))],
@@ -246,7 +248,7 @@ def create_order(customer_name: str, items: list[dict[str, Any]], confirmed: boo
 
 
 if __name__ == "__main__":
-    transport = os.getenv("MCP_TRANSPORT", "sse")
+    transport = os.getenv("MCP_TRANSPORT", "streamable-http")
     if transport not in {"sse", "streamable-http", "stdio"}:
         raise ValueError("MCP_TRANSPORT must be one of: sse, streamable-http, stdio")
     mcp.run(transport=transport)

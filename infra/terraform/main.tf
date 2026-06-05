@@ -180,7 +180,7 @@ resource "azurerm_container_app" "mcp" {
 
       env {
         name  = "MCP_TRANSPORT"
-        value = "sse"
+        value = "streamable-http"
       }
     }
   }

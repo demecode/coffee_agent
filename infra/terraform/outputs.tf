@@ -51,15 +51,15 @@ output "mcp_container_app_name" {
 
 output "mcp_server_url" {
   description = "Base URL for the Coffee MCP server."
-  value       = "https://${azurerm_container_app.mcp.latest_revision_fqdn}"
+  value       = "https://${azurerm_container_app.mcp.ingress[0].fqdn}"
 }
 
 output "mcp_sse_url" {
   description = "SSE endpoint URL for the Coffee MCP server."
-  value       = "https://${azurerm_container_app.mcp.latest_revision_fqdn}/sse"
+  value       = "https://${azurerm_container_app.mcp.ingress[0].fqdn}/sse"
 }
 
 output "mcp_streamable_http_url" {
   description = "Streamable HTTP endpoint URL for the Coffee MCP server."
-  value       = "https://${azurerm_container_app.mcp.latest_revision_fqdn}/mcp"
+  value       = "https://${azurerm_container_app.mcp.ingress[0].fqdn}/mcp"
 }

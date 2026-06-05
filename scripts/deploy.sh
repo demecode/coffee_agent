@@ -54,6 +54,14 @@ mkdir -p "${MCP_BUILD_CONTEXT}"
 rm -rf "${MCP_BUILD_CONTEXT}/mcp_server"
 cp -R "${ROOT_DIR}/mcp_server" "${MCP_BUILD_CONTEXT}/mcp_server"
 
+if [ "${MCP_IMAGE_TAG}" = "latest" ]; then
+  MCP_IMAGE_HASH="$(find "${ROOT_DIR}/mcp_server" -type f -not -path '*/__pycache__/*' -print0 | sort -z | xargs -0 shasum -a 256 | shasum -a 256 | awk '{print substr($1, 1, 12)}')"
+  MCP_IMAGE_TAG="mcp-${MCP_IMAGE_HASH}"
+fi
+
+export TF_VAR_mcp_image_tag="${MCP_IMAGE_TAG}"
+echo "Using MCP image tag: ${MCP_IMAGE_TAG}"
+
 az acr build \
   --registry "${MCP_ACR_NAME}" \
   --resource-group "${TF_VAR_resource_group_name:-rg-${PROJECT_NAME//_/-}}" \

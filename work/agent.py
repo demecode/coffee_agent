@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 from azure.ai.projects.models import PromptAgentDefinition, FileSearchTool, FunctionTool, Tool, MCPTool
+from openai import OpenAIError
 from openai.types.responses.response_input_param import FunctionCallOutput, ResponseInputParam
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -44,6 +45,11 @@ def parse_args() -> argparse.Namespace:
         "--vector-store-id",
         default=configured_vector_store_id,
         help="Existing vector store ID to use when reusing a vector store.",
+    )
+    parser.add_argument(
+        "--upload-documents",
+        action="store_true",
+        help="Upload files matching DOCUMENTS_GLOB into the selected vector store before starting the chat. Prefer scripts/sync_vector_store_documents.py for routine document updates.",
     )
     return parser.parse_args()
 
@@ -122,6 +128,8 @@ else:
     vector_store = openai_client.vector_stores.retrieve(args.vector_store_id)
     print(f"Using existing vector store (id: {vector_store.id})")
 
+if args.upload_documents:
+    upload_documents_to_vector_store(vector_store.id)
 
 
 ## -- Function Calling Tool -- ##
@@ -266,11 +274,15 @@ while True:
         break
 
     # Get the agent response
-    response = openai_client.responses.create(
-        conversation=conversation.id,
-        input=user_input,
-        extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-    )
+    try:
+        response = openai_client.responses.create(
+            conversation=conversation.id,
+            input=user_input,
+            extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
+        )
+    except OpenAIError as error:
+        print(f"Assistant error: {error}")
+        continue
 
     # Handle function calls in the response
     input_list: ResponseInputParam = []
@@ -289,11 +301,15 @@ while True:
                 )
 
     if input_list:
-        response = openai_client.responses.create(
-            previous_response_id=response.id,
-            input=input_list,
-            extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-        )
+        try:
+            response = openai_client.responses.create(
+                previous_response_id=response.id,
+                input=input_list,
+                extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
+            )
+        except OpenAIError as error:
+            print(f"Assistant error: {error}")
+            continue
 
     # Print the agent response
     print(f"Assistant: {response.output_text}")
